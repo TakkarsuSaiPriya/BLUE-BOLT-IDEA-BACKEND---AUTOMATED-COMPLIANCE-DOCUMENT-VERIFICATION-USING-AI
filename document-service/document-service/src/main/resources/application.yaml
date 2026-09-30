@@ -1,0 +1,120 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: document-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/document_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    show-sql: false
+
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        format_sql: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 12MB
+
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+
+  jms:
+    pub-sub-domain: false
+
+  devtools:
+    add-properties: false
+
+    livereload:
+      enabled: false
+
+  cache:
+    type: caffeine
+
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=5m
+
+  cloud:
+    loadbalancer:
+      cache:
+        enabled: true
+        ttl: 35s
+        capacity: 256
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret: jwt secret
+
+storage:
+  upload-directory: uploads
+  maximum-file-size: 10485760
+
+  allowed-content-types:
+    - application/pdf
+    - image/jpeg
+    - image/png
+
+  allowed-extensions:
+    - pdf
+    - jpg
+    - jpeg
+    - png
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    root: INFO
+
+    com.compliance.documentservice: INFO
+
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+
+    org.springframework.boot.devtools: WARN
+    org.springframework.security: INFO
+
+    com.netflix.discovery: WARN
+    org.springframework.cloud.netflix.eureka: INFO
+
+    org.apache.activemq: INFO
