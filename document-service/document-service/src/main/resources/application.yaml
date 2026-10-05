@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/document_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
-    password:
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -78,7 +78,7 @@ management:
       show-details: always
 
 jwt:
-  secret: jwt secret
+  secret: 4f6e655365637265744b6579466f72417574685365727669636532303236
 
 storage:
   upload-directory: uploads
@@ -118,3 +118,4 @@ logging:
     org.springframework.cloud.netflix.eureka: INFO
 
     org.apache.activemq: INFO
+

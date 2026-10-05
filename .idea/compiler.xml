@@ -16,8 +16,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="ocr-service" />
         <module name="service-registry" />
         <module name="document-service" />
+      </profile>
+      <profile name="Annotation profile for verification-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
+        </processorPath>
+        <module name="verification-service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -25,7 +35,9 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="auth-service" options="-parameters" />
       <module name="document-service" options="-parameters" />
+      <module name="ocr-service" options="-parameters" />
       <module name="service-registry" options="-parameters" />
+      <module name="verification-service" options="-parameters" />
     </option>
   </component>
 </project>

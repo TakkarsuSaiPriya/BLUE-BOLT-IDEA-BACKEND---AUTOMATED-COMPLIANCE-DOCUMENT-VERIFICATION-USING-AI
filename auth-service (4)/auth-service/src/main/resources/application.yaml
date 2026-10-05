@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/auth_db_compliance?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
     username: root
-    password:
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -47,7 +47,7 @@ management:
         include: health,info,metrics
 
 jwt:
-  secret: jwt secret
+  secret: 4f6e655365637265744b6579466f72417574685365727669636532303236
   access-token-expiration: 900000
   refresh-token-expiration: 604800000
 
