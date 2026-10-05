@@ -1,0 +1,158 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: verification-service
+
+  datasource:
+    url: ${VERIFICATION_DB_URL:jdbc:mysql://localhost:3306/verification_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${VERIFICATION_DB_USERNAME:root}
+    password: ${VERIFICATION_DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    show-sql: false
+
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          time_zone: UTC
+
+  activemq:
+    broker-url: ${ACTIVEMQ_BROKER_URL:tcp://localhost:61616}
+    user: ${ACTIVEMQ_USERNAME:admin}
+    password: ${ACTIVEMQ_PASSWORD:}
+
+    packages:
+      trust-all: false
+      trusted:
+        - java.lang
+        - java.util
+        - java.time
+        - java.math
+        - com.compliance.verificationservice.dto.event
+        - com.compliance.verificationservice.dto.internal
+
+  jms:
+    pub-sub-domain: false
+
+    listener:
+      auto-startup: true
+      acknowledge-mode: auto
+      concurrency: 1
+      max-concurrency: 3
+
+  cache:
+    type: caffeine
+
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=5m
+
+  devtools:
+    add-properties: false
+
+    restart:
+      enabled: false
+
+    livereload:
+      enabled: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+
+  endpoint:
+    health:
+      show-details: always
+
+  info:
+    env:
+      enabled: true
+
+info:
+  application:
+    name: verification-service
+    description: Automated compliance verification service
+    version: 1.0.0
+
+jwt:
+  secret: JWT_SECRET
+
+internal:
+  service-key: INTERNAL_SERVICE_KEY
+
+ocr-service:
+  name: ${OCR_SERVICE_NAME:ocr-service}
+
+document-service:
+  name: ${DOCUMENT_SERVICE_NAME:document-service}
+
+verification:
+  minimum-ocr-confidence: 40.0
+  verified-score-threshold: 80.0
+  review-score-threshold: 50.0
+  maximum-retry-count: 3
+
+messaging:
+  destinations:
+    ocr-completed-topic: VirtualTopic.OcrCompleted
+    ocr-completed-consumer-queue: Consumer.VerificationService.VirtualTopic.OcrCompleted
+    verification-completed-topic: VirtualTopic.VerificationCompleted
+    verification-failed-topic: VirtualTopic.VerificationFailed
+
+  redelivery:
+    initial-delay: 2000
+    delay: 5000
+    maximum-attempts: 3
+    use-exponential-backoff: true
+    backoff-multiplier: 2.0
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [%X{correlationId:-no-correlation-id}] %logger{36} - %msg%n"
+
+  level:
+    root: INFO
+    com.compliance.verificationservice: INFO
+    org.springframework.security: INFO
+    org.springframework.cloud.openfeign: INFO
+    org.springframework.jms: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+    org.apache.activemq: INFO
+    com.netflix.discovery: WARN

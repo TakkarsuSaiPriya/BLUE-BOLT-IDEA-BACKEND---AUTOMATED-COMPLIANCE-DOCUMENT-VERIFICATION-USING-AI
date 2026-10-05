@@ -1,0 +1,146 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ocr-service
+
+  datasource:
+    url: ${OCR_DB_URL:jdbc:mysql://localhost:3306/ocr_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${OCR_DB_USERNAME:root}
+    password: ${OCR_DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    show-sql: false
+
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        format_sql: false
+
+  activemq:
+    broker-url: ${ACTIVEMQ_BROKER_URL:tcp://localhost:61616}
+    user: ${ACTIVEMQ_USERNAME:admin}
+    password: ${ACTIVEMQ_PASSWORD:}
+
+    packages:
+      trust-all: false
+      trusted:
+        - java.lang
+        - java.util
+        - java.time
+        - com.compliance.ocrservice.event
+
+  jms:
+    pub-sub-domain: false
+
+    listener:
+      auto-startup: true
+      acknowledge-mode: auto
+      concurrency: 1
+      max-concurrency: 3
+
+  cache:
+    type: caffeine
+
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=5m
+
+  devtools:
+    add-properties: false
+
+    restart:
+      enabled: true
+
+    livereload:
+      enabled: false
+
+embedded-activemq:
+  enabled: true
+  broker-name: blue-bolt-broker
+  tcp-connector: tcp://0.0.0.0:61616
+  persistent: false
+  use-jmx: false
+  delete-messages-on-startup: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret: JWT_SECRET
+
+internal:
+  service-key: INTERNAL_SERVICE_KEY
+
+document-service:
+  name: document-service
+
+ocr:
+  language: eng
+  data-path: ${TESSDATA_PATH:tessdata}
+  engine: TESSERACT
+  page-segmentation-mode: 3
+  engine-mode: 1
+  render-dpi: 300
+  maximum-pages: 25
+  minimum-confidence: 40.0
+  temporary-directory: ocr-temp
+
+messaging:
+  destinations:
+    document-uploaded-topic: VirtualTopic.DocumentUploaded
+    document-uploaded-consumer-queue: Consumer.OcrService.VirtualTopic.DocumentUploaded
+    ocr-completed-topic: VirtualTopic.OcrCompleted
+    ocr-failed-topic: VirtualTopic.OcrFailed
+
+  redelivery:
+    initial-delay: 2000
+    delay: 5000
+    maximum-attempts: 3
+    use-exponential-backoff: true
+    backoff-multiplier: 2.0
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  level:
+    root: INFO
+    com.compliance.ocrservice: INFO
+    org.springframework.security: INFO
+    org.springframework.cloud.openfeign: INFO
+    org.springframework.jms: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+    org.apache.activemq: INFO
+    com.netflix.discovery: WARN
